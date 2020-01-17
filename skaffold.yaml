@@ -1,0 +1,22 @@
+apiVersion: skaffold/v1beta2
+kind: Config
+build:
+  local:
+    push: false
+  artifacts: # array of images/containers that we want Skaffold to manage
+    - image: renrobles/multi-client
+      context: client
+      docker:
+        dockerfile: Dockerfile.dev
+      sync: # if there's a change to any other file type, Skaffold falls back to Mode 1 (rebuild image)
+        '**/*.js': .
+        '**/*.css': .
+        '**/*.html': .
+deploy:
+  kubectl:
+    manifests: # list of config (k8s yaml) files that we want Skaffold to manage
+      - k8s/client-deployment.yaml
+      - k8s/server-deployment.yaml
+      - k8s/worker-deployment.yaml
+      - k8s/server-cluster-ip-service.yaml
+      - k8s/client-cluster-ip-service.yaml
